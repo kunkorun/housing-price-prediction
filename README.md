@@ -1,423 +1,384 @@
-House Prices: Advanced Regression Techniques
+\# House Prices: Advanced Regression Techniques
 
-Project Overview
 
-This project solves the Kaggle competition **House Prices: Advanced Regression Techniques**
 
-The goal is to predict the sale price of residential properties using information about the house, such as its quality, area, year of construction, garage, basement, neighborhood, and other characteristics
+In this project, I tackle the \[Kaggle House Prices: Advanced Regression Techniques](https://www.kaggle.com/c/house-prices-advanced-regression-techniques) competition. Predicting house prices sounds straightforward at first, but with 79 explanatory variables, messy real-world data, and a lot of hidden multicollinearity, it becomes a fantastic exercise in feature engineering and robust regression modeling.
 
-The project includes:
 
-* data cleaning and missing-value handling;
-* exploratory data analysis (EDA);
-* feature analysis and feature engineering;
-* comparison of several regression models;
-* cross-validation;
-* hyperparameter tuning;
-* error analysis;
-* generation and validation of a Kaggle submission file
 
-The main target variable is `SalePrice`
+My focus here wasn't just to get a good score, but to build a complete, transparent, and reproducible regression pipeline — from deep exploratory analysis to rigorous error checking.
+
+
 
 \---
 
-Dataset
 
-The project uses the Kaggle **House Prices: Advanced Regression Techniques** dataset
 
-The notebook reads:
+\## Problem
 
-* `train.csv` — training data with the target variable `SalePrice`;
-* `test.csv` — test data used to generate predictions
 
-The current notebook is configured for the Kaggle environment and uses the following input path:
 
-```text
-/kaggle/input/competitions/house-prices-advanced-regression-techniques/
-```
+The goal is to predict the final sale price of residential properties in Ames, Iowa. This is a regression problem where the target variable is `SalePrice`. The real challenge lies in handling a massive amount of categorical and numerical features, dealing with missing values that actually carry meaning, and avoiding overfitting on a relatively small dataset.
 
-\---
 
-Workflow
 
-The project follows this general pipeline:
+\## Dataset
 
-```text
-Data Loading
-     ↓
-Missing Value Handling
-     ↓
-Exploratory Data Analysis
-     ↓
-Feature Analysis
-     ↓
-Feature Engineering
-     ↓
-Preprocessing
-     ↓
-Cross-Validation
-     ↓
-Model Comparison
-     ↓
-Hyperparameter Tuning
-     ↓
-Error Analysis
-     ↓
-Final Model
-     ↓
-Kaggle Submission
-```
 
-\---
 
-Data Preprocessing
+The project relies on the official Kaggle competition data:
 
-Missing values are handled according to the meaning of the features
 
-Categorical features
 
-For features where a missing value represents the absence of an element, missing values are replaced with `"None"`
+\- `train.csv` — training data containing property features and the target variable `SalePrice`
 
-Examples:
+\- `test.csv` — unlabeled test data used to generate the final Kaggle predictions
 
-* `Alley`
-* `MasVnrType`
-* `BsmtQual`
-* `BsmtCond`
-* `BsmtExposure`
-* `BsmtFinType1`
-* `BsmtFinType2`
-* `FireplaceQu`
-* `GarageType`
-* `GarageFinish`
-* `GarageQual`
-* `GarageCond`
-* `PoolQC`
-* `Fence`
-* `MiscFeature`
 
-Numerical features
 
-Some missing numerical values represent the absence of the corresponding feature and are replaced with `0`
+The notebook is configured to run seamlessly in the Kaggle environment, reading data directly from the corresponding input directory, but it can easily be adapted for local execution.
 
-Examples:
 
-* `MasVnrArea`
-* `GarageYrBlt`
-* `BsmtFullBath`
-* `BsmtHalfBath`
-* `BsmtFinSF1`
-* `BsmtFinSF2`
-* `BsmtUnfSF`
-* `TotalBsmtSF`
-* `GarageArea`
-* `GarageCars`
 
-`LotFrontage` is imputed using the median value for the corresponding `Neighborhood`, with a global training median as a fallback
+\## Workflow
 
-Other categorical variables in the test set are filled using the most frequent value from the training data
 
-The modeling pipeline additionally uses:
 
-* median imputation for numerical variables;
-* most-frequent imputation for categorical variables;
-* one-hot encoding for categorical variables
+To keep the project structured, I followed a strict end-to-end machine learning pipeline:
 
-\---
 
-Exploratory Data Analysis
 
-The target variable `SalePrice` is right-skewed, with high-value outliers
+1\. Data Loading
 
-The notebook investigates relationships between `SalePrice` and several important features, including:
+2\. Missing Value Handling
 
-* `OverallQual`
-* `GrLivArea`
-* `GarageCars`
-* `GarageArea`
-* `TotRmsAbvGrd`
-* `BsmtFullBath`
+3\. Exploratory Data Analysis (EDA)
 
-Correlation analysis and scatter plots are used to understand relationships between variables and identify highly correlated features
+4\. Feature Analysis \& Correlation Check
 
-Two notable pairs of correlated features are:
+5\. Feature Engineering
 
-* `GarageCars` and `GarageArea`
-* `GrLivArea` and `TotRmsAbvGrd`
+6\. Preprocessing Pipeline Setup
 
-These relationships are tested experimentally during model development
+7\. Cross-Validation Strategy
 
-\---
+8\. Model Comparison
 
-Target Transformation
+9\. Hyperparameter Tuning
 
-Because `SalePrice` is strongly right-skewed, the target is transformed using:
+10\. Error \& Residual Analysis
+
+11\. Final Model Training
+
+12\. Kaggle Submission Generation
+
+
+
+\## Data Preprocessing
+
+
+
+Handling missing values in this dataset requires context, as "missing" often means "does not exist" rather than "unknown". My strategy included:
+
+
+
+\- replacing missing categorical variables with `None` when it indicated the absence of a feature (like no pool or no garage)
+
+\- replacing missing numerical variables with `0` where logically appropriate
+
+\- imputing `LotFrontage` using the median value grouped by `Neighborhood`, falling back to the global training median if a neighborhood had no data
+
+
+
+Inside the modeling pipeline, I also applied:
+
+
+
+\- median imputation for remaining numerical variables
+
+\- most-frequent imputation for categorical variables
+
+\- one-hot encoding for all categorical features
+
+
+
+\## Exploratory Data Analysis
+
+
+
+Before building models, I dug into the data distributions and relationships. I quickly noticed that the target variable `SalePrice` is strongly right-skewed, with high-value observations acting as potential outliers.
+
+
+
+I investigated the relationships between `SalePrice` and key drivers like:
+
+
+
+\- `OverallQual`
+
+\- `GrLivArea`
+
+\- `GarageCars`
+
+\- `GarageArea`
+
+\- `TotRmsAbvGrd`
+
+\- `BsmtFullBath`
+
+
+
+Using correlation matrices and scatter plots, I also identified highly correlated feature pairs (like `GarageCars` vs `GarageArea` and `GrLivArea` vs `TotRmsAbvGrd`) to keep an eye on multicollinearity.
+
+
+
+\## Target Transformation
+
+
+
+Because `SalePrice` is heavily right-skewed and the competition evaluates submissions using Root Mean Squared Error (RMSE) on the logarithmic scale, I transformed the target using `log1p(SalePrice)`. 
+
+
+
+All model evaluations were performed on this log-transformed target, and before generating the final submission, I converted the predictions back to the original price scale using `expm1(predictions)`.
+
+
+
+\## Feature Engineering
+
+
+
+I tested several custom features to capture interactions and property age:
+
+
+
+| Feature | Formula / Logic |
+
+|---|---|
+
+| `TotalSF` | `TotalBsmtSF` + `1stFlrSF` + `2ndFlrSF` |
+
+| `GarageInteraction` | `GarageCars` × `GarageArea` |
+
+| `HouseAge` | `YrSold` - `YearBuilt` |
+
+| `YearsSinceRemod` | `YrSold` - `YearRemodAdd` |
+
+| `QualCondInteraction` | `OverallQual` × `OverallCond` |
+
+
+
+During my experiments, `HouseAge` produced the most noticeable improvement among the tested engineered features, although the overall boost was relatively small.
+
+
+
+\## Models
+
+
+
+I compared several regression approaches, starting from simple baselines and moving to more complex ensemble methods:
+
+
+
+\- Linear Regression
+
+\- Ridge Regression
+
+\- Decision Tree Regressor
+
+\- Random Forest Regressor
+
+\- Gradient Boosting Regressor
+
+
+
+I used `RandomizedSearchCV` to tune the hyperparameters for both Random Forest and Gradient Boosting. Ultimately, the tuned \*\*Gradient Boosting\*\* model proved to be the most robust and was selected for the final predictions.
+
+
+
+\## Evaluation
+
+
+
+To ensure my evaluation was reliable and not dependent on a single train-test split, I used 5-fold cross-validation:
+
+
 
 ```python
-y\_log = np.log1p(y)
+
+KFold(n\_splits=5, shuffle=True, random\_state=42)
+
 ```
 
-Model evaluation is performed on the log-transformed target using **Root Mean Squared Error (RMSE)**
 
-Predictions are converted back to the original price scale with:
 
-```python
-np.expm1(predictions)
-```
+The main evaluation metric was RMSE on the `log1p(SalePrice)` target. I also utilized out-of-fold (OOF) predictions to conduct a thorough residual analysis. 
 
-\---
 
-Feature Engineering
 
-Several additional features were tested
+\*Note: I intentionally didn't hardcode exact CV scores in this README, as they can fluctuate slightly depending on the exact preprocessing steps, feature sets, and random seeds used when the notebook is executed.\*
 
-`TotalSF`
 
-Total square footage:
+
+\## Error Analysis
+
+
+
+I didn't just look at the final score; I dug into the model's mistakes. My error analysis examined:
+
+
+
+\- actual vs predicted `log(SalePrice)` scatter plots
+
+\- residual distributions
+
+\- absolute error distributions
+
+\- errors segmented by `OverallQual`
+
+\- errors segmented by `GrLivArea`
+
+\- errors grouped by `Neighborhood`
+
+\- performance across different price segments
+
+
+
+The analysis revealed that larger errors are heavily concentrated around difficult, extreme, or highly unique price cases. I also investigated systematic residual patterns specific to tree-based models to understand where the model was consistently over- or under-predicting.
+
+
+
+\## Final Prediction and Submission
+
+
+
+Before generating the final output, the notebook strictly checks that the train and test feature spaces are perfectly aligned. The final submission workflow looks like this:
+
+
+
+1\. Train the final model on the full training data
+
+2\. Predict `log(SalePrice)` for the test set
+
+3\. Convert predictions back to the original scale with `expm1()`
+
+4\. Create the submission DataFrame
+
+5\. Validate columns and prediction integrity
+
+6\. Save `submission.csv`
+
+
+
+To ensure a clean submission, the notebook validates that:
+
+
+
+\- the `Id` column perfectly matches the test data
+
+\- predictions contain absolutely no `NaN` values
+
+\- all predictions are finite numbers
+
+\- no predictions are negative
+
+
+
+\## Repository Structure
+
+
 
 ```text
-TotalBsmtSF + 1stFlrSF + 2ndFlrSF
-```
 
-`GarageInteraction`
+housing-price-prediction/
 
-Interaction between garage capacity and garage area:
-
-```text
-GarageCars × GarageArea
-```
-
-`HouseAge`
-
-Age of the house at the time of sale:
-
-```text
-YrSold - YearBuilt
-```
-
-`YearsSinceRemod`
-
-Years since the most recent remodeling:
-
-```text
-YrSold - YearRemodAdd
-```
-
-`QualCondInteraction`
-
-Interaction between overall quality and overall condition:
-
-```text
-OverallQual × OverallCond
-```
-
-The experiments showed that some engineered features added little or no useful improvement. `HouseAge` produced the most noticeable improvement among the tested feature-engineering experiments, but the improvement was small
-
-\---
-
-Models
-
-Several regression models were evaluated during the project:
-
-Linear Regression
-
-Used as the main baseline model
-
-Ridge Regression
-
-Tested with `RidgeCV` and several values of `alpha`
-
-Decision Tree Regressor
-
-Used as a tree-based baseline
-
-Random Forest Regressor
-
-A Random Forest model was evaluated and then tuned with `RandomizedSearchCV`
-
-The search included parameters such as:
-
-* `n\_estimators`
-* `max\_depth`
-* `min\_samples\_split`
-* `min\_samples\_leaf`
-* `max\_features`
-
-Gradient Boosting Regressor
-
-Gradient Boosting was also evaluated and tuned with `RandomizedSearchCV`
-
-The search included:
-
-* `n\_estimators`
-* `learning\_rate`
-* `max\_depth`
-* `min\_samples\_split`
-* `min\_samples\_leaf`
-* `subsample`
-* `max\_features`
-* `loss`
-
-The tuned Gradient Boosting model is used in the notebook to generate the final Kaggle predictions
-
-\---
-
-Model Evaluation
-
-Models are evaluated using **5-fold cross-validation**:
-
-```python
-KFold(
-    n\_splits=5,
-    shuffle=True,
-    random\_state=42
-)
-```
-
-The main evaluation metric is:
-
-```text
-RMSE
-```
-
-calculated on `log1p(SalePrice)`
-
-The notebook also compares out-of-fold predictions and prediction errors to understand where the models perform well and where they struggle
-
-Exact CV values are intentionally not hard-coded in this README because they depend on the current preprocessing, feature set, and hyperparameter search results printed when the notebook is executed
-
-\---
-
-Error Analysis
-
-Out-of-fold predictions are used to investigate model errors
-
-The analysis looks at:
-
-* actual vs predicted `log(SalePrice)`;
-* residual distribution;
-* absolute error;
-* error by `OverallQual`;
-* error by `GrLivArea`;
-* error by `Neighborhood`;
-* error across different price segments
-
-The analysis indicates that large errors are concentrated around difficult or extreme price cases
-
-For the tree-based models, the notebook also examines systematic residual patterns and possible overprediction of some groups of houses
-
-\---
-
-Final Prediction and Submission
-
-Before generating the submission file, the notebook checks that train and test features are aligned
-
-The final prediction workflow is:
-
-```text
-Train final model
-      ↓
-Predict log(SalePrice)
-      ↓
-Convert predictions with expm1()
-      ↓
-Create submission DataFrame
-      ↓
-Validate columns and predictions
-      ↓
-Save submission.csv
-```
-
-The submission file contains:
-
-```text
-Id,SalePrice
-```
-
-The notebook validates that:
-
-* the `Id` column matches `test.csv`;
-* predictions do not contain `NaN`;
-* predictions are finite;
-* predictions are not negative
-
-The final file is saved as:
-
-```text
-submission.csv
-```
-
-\---
-
-Project Structure
-
-A simple repository structure can be:
-
-```text
-house-prices-regression/
-│
 ├── README.md
-├── notebook.ipynb
-└── submission.csv
+
+└── house.ipynb
+
 ```
 
-The exact notebook filename can be changed to match the file stored in the repository
 
-\---
 
-Technologies
+\## How to Run
 
-* Python
-* Pandas
-* NumPy
-* Matplotlib
-* Seaborn
-* Scikit-learn
-* Jupyter Notebook
-* Kaggle
 
-\---
 
-Main Python Tools
+\### On Kaggle
 
-The project uses:
 
-* `pandas` for data manipulation;
-* `numpy` for numerical operations and target transformation;
-* `matplotlib` and `seaborn` for visualization;
-* `scikit-learn` for preprocessing, cross-validation, regression models, and hyperparameter tuning
 
-\---
+1\. Open `house.ipynb` in Kaggle
 
-Running the Project
+2\. Ensure the competition dataset is attached to the notebook environment
 
-Kaggle
+3\. Run the cells sequentially from top to bottom
 
-The notebook is already configured for the Kaggle dataset path
 
-Open the notebook in Kaggle and run the cells sequentially
 
-Local environment
+\### Locally
 
-To run the project locally:
 
-1. Download the Kaggle dataset
-2. Place `train.csv` and `test.csv` in a local data directory
-3. Replace the Kaggle-specific dataset path in the notebook
-4. Install the required Python packages
-5. Run the notebook from start to finish
 
-Example:
+1\. Download the Kaggle dataset
+
+2\. Place `train.csv` and `test.csv` in an appropriate local directory
+
+3\. Update the data paths in the notebook if necessary
+
+4\. Install the required packages:
+
+
 
 ```bash
+
 pip install numpy pandas matplotlib seaborn scikit-learn jupyter
+
 ```
 
-\---
 
-Notes
 
-One preprocessing step for `LotFrontage` is fitted using the full training set before cross-validation. For a strictly leakage-free validation pipeline, all preprocessing steps should be fitted separately inside each cross-validation fold
+5\. Launch Jupyter and run the notebook from start to finish
 
-This project is primarily focused on the complete machine learning workflow: preprocessing, analysis, experimentation, validation, error analysis, and Kaggle submission generation
+
+
+\## Tech Stack
+
+
+
+\- Python
+
+\- Jupyter Notebook
+
+\- pandas
+
+\- NumPy
+
+\- matplotlib
+
+\- seaborn
+
+\- scikit-learn
+
+\- Kaggle
+
+
+
+\## Important Limitation
+
+
+
+I want to be transparent about a known limitation in my current pipeline. One preprocessing step — the imputation of `LotFrontage` based on `Neighborhood` medians — is fitted using the full training set \*before\* cross-validation begins. 
+
+
+
+For a strictly leakage-free validation pipeline, all preprocessing steps (including neighborhood grouping) should be fitted separately inside each cross-validation fold. I am documenting this limitation here because reproducible and honest model evaluation requires distinguishing the current implementation from a fully leakage-free setup. Fixing this via a custom Scikit-Learn transformer is a clear next step for the project.
+
+
+
+\## Conclusion
+
+
+
+For me, this project was a deep dive into the complete regression workflow. It reinforced how crucial it is to understand the business logic behind missing values, how powerful target transformations can be for skewed data, and why analyzing residuals is just as important as optimizing the final metric.
 
